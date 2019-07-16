@@ -5,37 +5,35 @@
 
 A simple singleton instance with **fluent methods** to format a float price with the right currency syntax, adding to it an optional suffix or prefix and specifying the decimals number.
 
----
+## Convert a integer/float value to a formatted currency:
 
-**Convert a integer/float value to a formatted currency:**  
 ```sh
-CurrencyFormatter::EUR(1000.46)->withPrefix('€')->format());
+CurrencyFormatter::EUR(1000.46)->withPrefix('€')->format();
 ```
 - Will return the formatted string: **€ 1.000,46**
 ```sh
-CurrencyFormatter::EUR(1000.46)->withPrefix('EURO')->decimals(3)->format());
+CurrencyFormatter::EUR(1000.46)->withPrefix('EURO')->decimals(3)->format();
 ```
 - Will return the formatted string: **EURO 1.000,456**
 ```sh
-CurrencyFormatter::EUR(1000.46)->withSuffix('Eur')->format());
+CurrencyFormatter::EUR(1000.46)->withSuffix('Eur')->format();
 ```
 - Will return the formatted string: **1.000,46 Eur**
 ```sh
-CurrencyFormatter::USD(1000.46)->withPrefix('$')->format());
+CurrencyFormatter::USD(1000.46)->withPrefix('$')->format();
 ```
-- Will return the formatted string: **$ 1,000.46** 
+- Will return the formatted string: **$ 1,000.46**
 ```sh
-CurrencyFormatter::USD(1000.46)->withPrefix('USD')->decimals(3)->format());
+CurrencyFormatter::USD(1000.46)->withPrefix('USD')->decimals(3)->format();
 ```
 - Will return the formatted string: **USD 1,000.456**
 ```sh
-CurrencyFormatter::USD(1000.46)->withSuffix('USD')->format());
+CurrencyFormatter::USD(1000.46)->withSuffix('USD')->format();
 ```
 - Will return the formatted string: **1,000.46 USD**
 
----
+## Convert a currency string to a valid float value
 
-**Convert a currency string to a valid float value**
 ```sh
 CurrencyFormatter::toFloat('EUR 1.000,45');
 ```
@@ -46,7 +44,7 @@ CurrencyFormatter::toFloat('1,000.45 USD');
 - Will return the float value: **1000.45**
 
 
-# Installation
+## Installation
 
 Clone the package with the command:
 ```sh
