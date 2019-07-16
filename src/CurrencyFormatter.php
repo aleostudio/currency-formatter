@@ -43,7 +43,7 @@ final class CurrencyFormatter
      * @param  int/float $value
      * @return exception $e if it is not valid.
      */
-    private function isValid($value)
+    private static function isValid($value)
     {
         if (!is_nan($value) && !is_double($value) && !is_float($value) && !is_int($value))
             throw new \Exception("Format exception");
