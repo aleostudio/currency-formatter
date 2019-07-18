@@ -5,20 +5,16 @@ namespace AleoStudio\CurrencyFormatter;
 
 final class CurrencyFormatter
 {
-    /**
-     * Private properties.
-     */
     private $value;
     private $suffix;
     private $prefix;
-    private $currency;
-    private $decimals = 2;
+    private $decimals;
+    private $thousandsSep;
+    private $decimalsSep;
 
-
-    /**
-     * Private Singleton instance.
-     */
     private static $instance;
+
+
 
 
     /**
@@ -36,50 +32,32 @@ final class CurrencyFormatter
     }
 
 
-    /**
-     * Simple validator. It checks if the given string
-     * is a valid float/double value.
-     * 
-     * @param  int/float $value
-     * @return exception $e if it is not valid.
-     */
-    private static function isValid($value)
-    {
-        if (!is_nan($value) && !is_double($value) && !is_float($value) && !is_int($value))
-            throw new \Exception("Format exception");
-    }
 
 
     /**
-     * It returns the unique EurFormatter instance assigning to it
-     * the EUR currency and the given float value (if valid).
+     * It sets the given currency with an abstract factory.
      * 
-     * @param  int/float $value
-     * @return static    $instance with the given currency and value.
+     * @param  string $currency
+     * @return static $instance with the given currency.
      */
-    public static function EUR($value)
+    public static function set($currency)
     {
-        self::isValid($value);
+        $currencyClass = '\AleoStudio\CurrencyFormatter\\'.strtoupper($currency);
+
+        $currency = new $currencyClass();
+
+        // Reset the singleton instance everytime we use the set method.
         static::$instance = null;
 
-        return self::getInstance()->setCurrency('EUR')->setValue($value);
+        return self::getInstance()
+            ->decimals($currency->getDecimals())
+            ->withSuffix($currency->getSuffix())
+            ->withPrefix($currency->getPrefix())
+            ->withDecimalsSeparator($currency->getDecimalsSep())
+            ->withThousandsSeparator($currency->getThousandsSep());
     }
 
 
-    /**
-     * It returns the unique EurFormatter instance assigning to it
-     * the USD currency and the given float value (if valid).
-     * 
-     * @param  int/float $value
-     * @return static    $instance with the given currency and value.
-     */
-    public static function USD($value)
-    {
-        self::isValid($value);
-        static::$instance = null;
-
-        return self::getInstance()->setCurrency('USD')->setValue($value);
-    }
 
 
     /**
@@ -89,26 +67,49 @@ final class CurrencyFormatter
      * @param  int/float $value
      * @return static    $instance with the given value.
      */
-    private function setValue($value)
+    public function value($value)
     {
+        self::isValid($value);
         $this->value = $value;
+
         return $this;
     }
+
+
 
 
     /**
-     * It set the given suffix and returns the singleton instance
+     * It set the given thousands separator and returns the singleton instance
      * to be used with other fluent methods.
      * 
-     * @param  string $suffix
-     * @return static $instance with the given suffix.
+     * @param  string $separator
+     * @return static $instance with the given separator.
      */
-    public function withSuffix($suffix)
+    private function withThousandsSeparator($separator)
     {
-        $this->suffix = trim($suffix);
-        $this->prefix = null;
+        $this->thousandsSep = trim($separator);
+
         return $this;
     }
+
+
+
+
+    /**
+     * It set the given decimals separator and returns the singleton instance
+     * to be used with other fluent methods.
+     * 
+     * @param  string $separator
+     * @return static $instance with the given separator.
+     */
+    private function withDecimalsSeparator($separator)
+    {
+        $this->decimalsSep = trim($separator);
+
+        return $this;
+    }
+
+
 
 
     /**
@@ -122,8 +123,29 @@ final class CurrencyFormatter
     {
         $this->prefix = trim($prefix);
         $this->suffix = null;
+
         return $this;
     }
+
+
+
+
+    /**
+     * It set the given suffix and returns the singleton instance
+     * to be used with other fluent methods.
+     * 
+     * @param  string $suffix
+     * @return static $instance with the given suffix.
+     */
+    public function withSuffix($suffix)
+    {
+        $this->suffix = trim($suffix);
+        $this->prefix = null;
+
+        return $this;
+    }
+
+
 
 
     /**
@@ -136,23 +158,11 @@ final class CurrencyFormatter
     public function decimals($decimals)
     {
         $this->decimals = $decimals;
+
         return $this;
     }
 
 
-    /**
-     * It set the given currency and returns the singleton instance
-     * to be used with other fluent methods.
-     * 
-     * @param  string $currency
-     * @return static $instance with the given currency.
-     */
-    private function setCurrency($currency)
-    {
-        // TODO: check if the given currency is accepted.
-        $this->currency = trim(strtoupper($currency));
-        return $this;
-    }
 
 
     /**
@@ -164,20 +174,13 @@ final class CurrencyFormatter
      */
     public function format()
     {
-        switch($this->currency)
-        {
-            case 'EUR':
-                return (($this->prefix) ? $this->prefix . ' ' : '') . number_format($this->value, $this->decimals, ',', '.') . (($this->suffix) ? ' ' . $this->suffix : '');
-                break;
+        $prefix = $this->prefix ? $this->prefix.' ' : '';
+        $suffix = $this->suffix ? ' '.$this->suffix : '';
 
-            case 'USD':
-                return (($this->prefix) ? $this->prefix . ' ' : '') . number_format($this->value, $this->decimals, '.', ',') . (($this->suffix) ? ' ' . $this->suffix : '');
-                break;
-
-            default:
-                return null;
-        }
+        return $prefix.number_format($this->value, $this->decimals, $this->decimalsSep, $this->thousandsSep).$suffix;
     }
+
+
 
 
     /**
@@ -200,6 +203,24 @@ final class CurrencyFormatter
             preg_replace("/[^0-9]/", "", substr($currency, $sep+1, strlen($currency)))
         );
     }
+
+
+
+
+    /**
+     * Simple validator. It checks if the given string
+     * is a valid float/double value.
+     * 
+     * @param  int/float $value
+     * @return exception $e if it is not valid.
+     */
+    private static function isValid($value)
+    {
+        if (!is_nan($value) && !is_double($value) && !is_float($value) && !is_int($value))
+            throw new \Exception("Format exception");
+    }
+
+
 
 
     /**
