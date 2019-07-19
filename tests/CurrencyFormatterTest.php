@@ -25,9 +25,9 @@ class CurrencyFormatterTest extends TestCase
     {
         $floatPrice = 1000.456;
 
-        $this->assertEquals('€ 1.000,46',     CurrencyFormatter::set('EUR')->value($floatPrice)->withPrefix('€')->format());
-        $this->assertEquals('EURO 1.000,456', CurrencyFormatter::set('EUR')->value($floatPrice)->withPrefix('EURO')->decimals(3)->format());
-        $this->assertEquals('1.000,46 Eur',   CurrencyFormatter::set('EUR')->value($floatPrice)->withSuffix('Eur')->format());
+        $this->assertEquals('€ 1.000,46',     CurrencyFormatter::set('EUR')->value($floatPrice)->withPrefix('€'));
+        $this->assertEquals('EURO 1.000,456', CurrencyFormatter::set('EUR')->value($floatPrice)->withPrefix('EURO')->decimals(3));
+        $this->assertEquals('1.000,46 Eur',   CurrencyFormatter::set('EUR')->value($floatPrice)->withSuffix('Eur'));
     }
 
 
@@ -35,8 +35,8 @@ class CurrencyFormatterTest extends TestCase
     {
         $floatPrice = 1000.456;
 
-        $this->assertEquals('$ 1,000.46',     CurrencyFormatter::set('USD')->value($floatPrice)->withPrefix('$')->format());
-        $this->assertEquals('USD 1,000.456',  CurrencyFormatter::set('USD')->value($floatPrice)->withPrefix('USD')->decimals(3)->format());
-        $this->assertEquals('1,000.46 USD',   CurrencyFormatter::set('USD')->value($floatPrice)->withSuffix('USD')->format());
+        $this->assertEquals('$ 1,000.46',     CurrencyFormatter::set('USD')->value($floatPrice)->withPrefix('$'));
+        $this->assertEquals('USD 1,000.456',  CurrencyFormatter::set('USD')->value($floatPrice)->withPrefix('USD')->decimals(3));
+        $this->assertEquals('1,000.46 USD',   CurrencyFormatter::set('USD')->value($floatPrice)->withSuffix('USD'));
     }
 }
