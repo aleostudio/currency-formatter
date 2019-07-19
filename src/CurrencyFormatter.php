@@ -2,6 +2,9 @@
 
 namespace AleoStudio\CurrencyFormatter;
 
+use AleoStudio\CurrencyFormatter\CurrencyFactory;
+use AleoStudio\CurrencyFormatter\DefaultCurrency;
+
 
 final class CurrencyFormatter
 {
@@ -11,6 +14,7 @@ final class CurrencyFormatter
     private $decimals;
     private $thousandsSep;
     private $decimalsSep;
+    private $currency;
 
     private static $instance;
 
@@ -42,14 +46,16 @@ final class CurrencyFormatter
      */
     public static function set($currency)
     {
-        $currencyClass = '\AleoStudio\CurrencyFormatter\\'.strtoupper($currency);
-
-        $currency = new $currencyClass();
+        $currency = CurrencyFactory::build($currency);
 
         // Reset the singleton instance everytime we use the set method.
         static::$instance = null;
 
+        if ($currency instanceof DefaultCurrency)
+            return self::getInstance()->setCurrency($currency);
+
         return self::getInstance()
+            ->setCurrency($currency)
             ->decimals($currency->getDecimals())
             ->withSuffix($currency->getSuffix())
             ->withPrefix($currency->getPrefix())
@@ -69,6 +75,9 @@ final class CurrencyFormatter
      */
     public function value($value)
     {
+        if (is_null($value))
+            throw new \Exception("Currency value can not be null");
+
         self::isValid($value);
         $this->value = $value;
 
@@ -85,8 +94,11 @@ final class CurrencyFormatter
      * @param  string $separator
      * @return static $instance with the given separator.
      */
-    private function withThousandsSeparator($separator)
+    public function withThousandsSeparator($separator)
     {
+        if (is_null($separator))
+            throw new \Exception("Thousands separator can not be null");
+
         $this->thousandsSep = trim($separator);
 
         return $this;
@@ -102,8 +114,11 @@ final class CurrencyFormatter
      * @param  string $separator
      * @return static $instance with the given separator.
      */
-    private function withDecimalsSeparator($separator)
+    public function withDecimalsSeparator($separator)
     {
+        if (is_null($separator))
+            throw new \Exception("Decimals separator can not be null");
+
         $this->decimalsSep = trim($separator);
 
         return $this;
@@ -121,8 +136,11 @@ final class CurrencyFormatter
      */
     public function withPrefix($prefix)
     {
+        if (is_null($prefix))
+            throw new \Exception("Currency prefix can not be null");
+
         $this->prefix = trim($prefix);
-        $this->suffix = null;
+        $this->suffix = '';
 
         return $this;
     }
@@ -139,8 +157,11 @@ final class CurrencyFormatter
      */
     public function withSuffix($suffix)
     {
+        if (is_null($suffix))
+            throw new \Exception("Currency suffix can not be null");
+
         $this->suffix = trim($suffix);
-        $this->prefix = null;
+        $this->prefix = '';
 
         return $this;
     }
@@ -157,6 +178,9 @@ final class CurrencyFormatter
      */
     public function decimals($decimals)
     {
+        if (is_null($decimals))
+            throw new \Exception("Currency decimals can not be null");
+
         $this->decimals = $decimals;
 
         return $this;
@@ -166,14 +190,42 @@ final class CurrencyFormatter
 
 
     /**
-     * Last fluent method of the flow. Depending by the currency set
+     * It set the given currency and returns the singleton instance
+     * to be used with other fluent methods.
+     * 
+     * @param  string $currency
+     * @return static $instance with the given decimals.
+     */
+    private function setCurrency($currency)
+    {
+        if (is_null($currency))
+            throw new \Exception("Currency can not be null");
+
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+
+
+
+    /**
+     * Last private fluent method of the flow. Depending by the currency set
      * it will format the price with the right comma and dot positions
      * adding the optional suffix and prefix if they were set.
      * 
      * @return string $formattedCurrency
      */
-    public function format()
+    private function format()
     {
+        if (is_null($this->currency))     throw new \Exception("Currency can not be null");
+        if (is_null($this->decimals))     throw new \Exception("Currency decimals can not be null");
+        if (is_null($this->prefix))       throw new \Exception("Currency prefix can not be null");
+        if (is_null($this->suffix))       throw new \Exception("Currency suffix can not be null");
+        if (is_null($this->value))        throw new \Exception("Currency value can not be null");
+        if (is_null($this->thousandsSep)) throw new \Exception("Thousands separator can not be null");
+        if (is_null($this->decimalsSep))  throw new \Exception("Decimals separator can not be null");
+
         $prefix = $this->prefix ? $this->prefix.' ' : '';
         $suffix = $this->suffix ? ' '.$this->suffix : '';
 
@@ -218,6 +270,21 @@ final class CurrencyFormatter
     {
         if (!is_nan($value) && !is_double($value) && !is_float($value) && !is_int($value))
             throw new \Exception("Format exception");
+    }
+
+
+
+
+    /**
+     * toString override to return the formatted currency
+     */
+    public function __toString()
+    {
+        try {
+            return $this->format();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 
 

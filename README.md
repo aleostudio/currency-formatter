@@ -5,27 +5,27 @@ A simple singleton instance with **fluent methods** to format a float price with
 ## Convert a integer/float value to a formatted currency:
 
 ```sh
-CurrencyFormatter::set('EUR')->value(1000.46)->format();
+CurrencyFormatter::set('EUR')->value(1000.46);
 ```
 - Will return the formatted string: **€ 1.000,46**
 ```sh
-CurrencyFormatter::set('EUR')->value(1000.46)->withPrefix('EURO')->decimals(3)->format();
+CurrencyFormatter::set('EUR')->value(1000.46)->withPrefix('EURO')->decimals(3);
 ```
 - Will return the formatted string: **EURO 1.000,460**
 ```sh
-CurrencyFormatter::set('EUR')->value(1000.46)->withSuffix('Eur')->format();
+CurrencyFormatter::set('EUR')->value(1000.46)->withSuffix('Eur');
 ```
 - Will return the formatted string: **1.000,46 Eur**
 ```sh
-CurrencyFormatter::set('USD')->value(1000.46)->withPrefix('$')->format();
+CurrencyFormatter::set('USD')->value(1000.46)->withPrefix('$');
 ```
 - Will return the formatted string: **$ 1,000.46**
 ```sh
-CurrencyFormatter::set('USD')->value(1000.46)->withPrefix('USD')->decimals(3)->format();
+CurrencyFormatter::set('USD')->value(1000.46)->withPrefix('USD')->decimals(3);
 ```
 - Will return the formatted string: **USD 1,000.460**
 ```sh
-CurrencyFormatter::set('USD')->value(1000.46)->withSuffix('USD')->format();
+CurrencyFormatter::set('USD')->value(1000.46)->withSuffix('USD');
 ```
 - Will return the formatted string: **1,000.46 USD**
 
@@ -58,13 +58,13 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use AleoStudio\CurrencyFormatter\CurrencyFormatter;
 
-echo CurrencyFormatter::set('EUR')->value(1000.46)->format() . '<br />';
-echo CurrencyFormatter::set('EUR')->value(1000.46)->withPrefix('EURO')->decimals(3)->format() . '<br />';
-echo CurrencyFormatter::set('EUR')->value(1000.46)->withSuffix('Eur')->format() . '<br />';
+echo CurrencyFormatter::set('EUR')->value(1000.46) . '<br />';
+echo CurrencyFormatter::set('EUR')->value(1000.46)->withPrefix('EURO')->decimals(3) . '<br />';
+echo CurrencyFormatter::set('EUR')->value(1000.46)->withSuffix('Eur') . '<br />';
 
-echo CurrencyFormatter::set('USD')->value(1000.46)->withPrefix('$')->format() . '<br />';
-echo CurrencyFormatter::set('USD')->value(1000.46)->withPrefix('USD')->decimals(3)->format() . '<br />';
-echo CurrencyFormatter::set('USD')->value(1000.46)->withSuffix('USD')->format() . '<br />';
+echo CurrencyFormatter::set('USD')->value(1000.46)->withPrefix('$') . '<br />';
+echo CurrencyFormatter::set('USD')->value(1000.46)->withPrefix('USD')->decimals(3) . '<br />';
+echo CurrencyFormatter::set('USD')->value(1000.46)->withSuffix('USD') . '<br />';
 
 echo CurrencyFormatter::toFloat('EUR 1.000,45') . '<br />';
 echo CurrencyFormatter::toFloat('1,000.45 USD') . '<br />';
